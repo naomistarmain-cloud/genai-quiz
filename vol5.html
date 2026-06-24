@@ -9,9 +9,11 @@
   body {
     font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif;
     color: #1e293b;
-    background: transparent;
+    background: #faf5ff;
     margin: 0;
-    padding: 0;
+    min-height: 100vh;
+    padding: 0 0 calc(96px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
   }
   .quiz-wrap { max-width: 720px; margin: 16px auto; padding: 0 12px; }
   .badge-bar {
@@ -22,7 +24,7 @@
   .review-tag { background: #fef3c7; color: #92400e; padding: 2px 10px; border-radius: 6px; }
   .card {
     background: #faf5ff; border-radius: 20px; box-shadow: 0 2px 24px rgba(0,0,0,0.06);
-    padding: 24px 20px;
+    padding: 22px 18px;
   }
   .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .q-counter { display: flex; align-items: center; gap: 8px; color: #64748b; font-weight: 600; }
@@ -38,20 +40,21 @@
     display: inline-block; padding: 4px 12px; background: #ede9fe; color: #5b21b6;
     font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 10px; letter-spacing: 1px;
   }
-  .q-text { font-size: 16px; font-weight: 700; line-height: 1.8; margin: 0 0 20px; color: #1e293b; }
-  .opt-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .q-text { font-size: 17px; font-weight: 700; line-height: 1.75; margin: 0 0 18px; color: #1e293b; }
+  .opt-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
   .opt-btn {
-    width: 100%; text-align: left; padding: 14px 16px; border-radius: 14px;
+    width: 100%; min-height: 64px; text-align: left; padding: 16px; border-radius: 16px;
     border: 2px solid #e2e8f0; background: #fff; cursor: pointer; transition: all .18s;
     display: flex; align-items: flex-start; gap: 12px; font-family: inherit;
+    touch-action: manipulation;
   }
-  .opt-btn:hover:not(.answered) { border-color: #c4b5fd; }
+  .opt-btn:hover:not(.answered), .opt-btn:focus-visible { border-color: #c4b5fd; outline: none; box-shadow: 0 0 0 4px rgba(196,181,253,0.32); }
   .opt-letter {
     width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; color: #64748b;
     display: flex; align-items: center; justify-content: center; font-weight: 700;
     flex-shrink: 0; font-size: 13px;
   }
-  .opt-text { font-size: 14px; line-height: 1.65; color: #1e293b; }
+  .opt-text { font-size: 15px; line-height: 1.62; color: #1e293b; }
   .opt-correct { border-color: #22c55e !important; background: #f0fdf4 !important; }
   .opt-correct .opt-letter { background: #22c55e; color: #fff; }
   .opt-wrong { border-color: #ef4444 !important; background: #fef2f2 !important; }
@@ -61,12 +64,21 @@
   .explain-wrong { background: #fef2f2; border: 1px solid #fecaca; }
   .explain-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 700; font-size: 16px; }
   .explain-body { margin: 0 0 14px; line-height: 1.8; color: #374151; }
-  .next-btn {
-    width: 100%; padding: 13px; background: #1e293b; color: #fff; border: none;
-    border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit;
+  .bottom-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    padding: 12px max(14px, env(safe-area-inset-left)) calc(12px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-right));
+    background: rgba(250,245,255,0.96); border-top: 1px solid #ddd6fe;
+    box-shadow: 0 -8px 24px rgba(15,23,42,0.08);
   }
-  .next-btn:hover { background: #0f172a; }
+  .nav-btn {
+    min-height: 50px; border: none; border-radius: 14px; font-family: inherit;
+    font-size: 16px; font-weight: 800; cursor: pointer; touch-action: manipulation;
+  }
+  .nav-prev { background: #fff; color: #5b21b6; border: 1px solid #c4b5fd; }
+  .nav-next { background: #7c3aed; color: #fff; }
+  .nav-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .nav-btn:focus-visible { outline: 3px solid rgba(124,58,237,0.35); outline-offset: 2px; }
   /* result screen */
   .result-card {
     max-width: 600px; margin: 24px auto; padding: 40px 32px; background: #fff;
@@ -98,6 +110,20 @@
   .btn-secondary { background: #f59e0b; }
   .btn-primary { background: #7c3aed; }
   .loading { text-align: center; padding: 40px; }
+  @media (max-width: 520px) {
+    body { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+    .quiz-wrap { margin: 10px auto; padding: 0 10px; }
+    .badge-bar { align-items: flex-start; gap: 8px; padding: 8px 10px; font-size: 12px; }
+    .card { border-radius: 16px; padding: 18px 14px; }
+    .top-row { align-items: flex-start; gap: 10px; }
+    .q-counter { font-size: 14px; }
+    .timer-box { padding: 7px 11px; }
+    .q-text { font-size: 16px; line-height: 1.72; }
+    .opt-btn { min-height: 60px; padding: 14px; gap: 10px; }
+    .opt-text { font-size: 14px; line-height: 1.6; }
+    .explain-box { padding: 15px 14px; }
+    .bottom-nav { gap: 8px; padding-inline: 10px; }
+  }
 </style>
 </head>
 <body>
@@ -173,6 +199,7 @@
   var state = {
     wrongIds: [],
     queue: allQuestions.slice(),
+    answers: [],
     current: 0,
     selected: null,
     answered: false,
@@ -207,32 +234,55 @@
 
   function handleAnswer(idx) {
     if (state.answered || state.queue.length === 0) return;
+    state.answers[state.current] = idx;
     state.selected = idx;
     state.answered = true;
-    var q = state.queue[state.current];
-    if (idx === q.answer) {
-      state.score++;
-    } else {
-      if (state.wrongIds.indexOf(q.id) === -1) state.wrongIds.push(q.id);
-    }
     render();
   }
 
+  function syncAnswer() {
+    var saved = state.answers[state.current];
+    state.selected = typeof saved === 'number' ? saved : null;
+    state.answered = typeof saved === 'number';
+  }
+
+  function calcResult() {
+    var score = 0;
+    var wrong = [];
+    state.queue.forEach(function(q, index) {
+      if (state.answers[index] === q.answer) score++;
+      else wrong.push(q.id);
+    });
+    state.score = score;
+    state.wrongIds = wrong;
+  }
+
   function nextQuestion() {
+    if (!state.answered) return;
     if (state.current < state.queue.length - 1) {
       state.current++;
-      state.selected = null;
-      state.answered = false;
+      syncAnswer();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
+      calcResult();
       state.showResult = true;
       if (state.timerId) clearInterval(state.timerId);
     }
     render();
   }
 
+  function prevQuestion() {
+    if (state.current <= 0) return;
+    state.current--;
+    syncAnswer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    render();
+  }
+
   function startReview() {
     var rq = allQuestions.filter(function(q) { return state.wrongIds.indexOf(q.id) !== -1; });
     state.queue = rq;
+    state.answers = [];
     state.current = 0;
     state.selected = null;
     state.answered = false;
@@ -247,6 +297,7 @@
   function resetAll() {
     state.wrongIds = [];
     state.queue = allQuestions.slice();
+    state.answers = [];
     state.current = 0;
     state.selected = null;
     state.answered = false;
@@ -265,6 +316,7 @@
   }
 
   function renderResult() {
+    calcResult();
     var pct = Math.round((state.score / state.queue.length) * 100);
     var pass = pct >= 75;
     var html = '';
@@ -296,6 +348,7 @@
     if (state.queue.length === 0) { root.innerHTML = '<div class="loading">読み込み中...</div>'; return; }
 
     var q = state.queue[state.current];
+    syncAnswer();
     var pctProgress = Math.round(((state.current + 1) / state.queue.length) * 100);
     var timerCls = state.timeLeft < 300 ? 'timer-warn' : '';
 
@@ -335,11 +388,13 @@
       html += '<div class="explain-head" style="color:' + (isCorrect ? '#16a34a' : '#dc2626') + ';">';
       html += (isCorrect ? '✅ 正解です！' : '❌ 不正解です') + '</div>';
       html += '<p class="explain-body"><strong>解説：</strong>' + esc(q.explanation) + '</p>';
-      html += '<button class="next-btn" id="btn-next">' + (state.current === state.queue.length - 1 ? '結果を見る' : '次の問題へ') + ' →</button>';
       html += '</div>';
     }
 
-    html += '</div>';
+    html += '</div><nav class="bottom-nav" aria-label="問題移動">';
+    html += '<button class="nav-btn nav-prev" id="btn-prev" type="button" ' + (state.current === 0 ? 'disabled' : '') + '>前へ</button>';
+    html += '<button class="nav-btn nav-next" id="btn-next" type="button" ' + (!state.answered ? 'disabled' : '') + '>' + (state.current === state.queue.length - 1 ? '結果を見る' : '次へ') + '</button>';
+    html += '</nav>';
     root.innerHTML = html;
 
     var optBtns = root.querySelectorAll('.opt-btn');
@@ -348,8 +403,8 @@
         handleAnswer(parseInt(this.getAttribute('data-idx'), 10));
       };
     });
-    var nb = document.getElementById('btn-next');
-    if (nb) nb.onclick = nextQuestion;
+    document.getElementById('btn-prev').onclick = prevQuestion;
+    document.getElementById('btn-next').onclick = nextQuestion;
   }
 
   // init

@@ -10,7 +10,9 @@
     font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
     color: #1e293b;
     background: #f0fdf4;
-    padding: 16px;
+    min-height: 100vh;
+    padding: 16px 16px calc(96px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
   }
   .quiz-wrap { max-width: 720px; margin: 0 auto; }
   .badge-bar {
@@ -19,7 +21,7 @@
     color: #166534; display: flex; justify-content: space-between; align-items: center;
   }
   .review-tag { background: #fef3c7; color: #92400e; padding: 2px 10px; border-radius: 6px; }
-  .card { background: #f8fafc; border-radius: 20px; box-shadow: 0 2px 24px rgba(0,0,0,0.06); padding: 24px 20px; }
+  .card { background: #f8fafc; border-radius: 20px; box-shadow: 0 2px 24px rgba(0,0,0,0.06); padding: 22px 18px; }
   .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .q-counter { display: flex; align-items: center; gap: 8px; color: #64748b; font-weight: 600; }
   .timer-box { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #fff; border-radius: 99px; border: 1px solid #e2e8f0; }
@@ -28,20 +30,21 @@
   .progress-track { width: 100%; background: #e2e8f0; border-radius: 99px; height: 4px; margin-bottom: 16px; }
   .progress-fill { background: #16a34a; border-radius: 99px; height: 4px; transition: width .3s; }
   .cat-tag { display: inline-block; padding: 4px 12px; background: #dcfce7; color: #166534; font-size: 12px; font-weight: 700; border-radius: 6px; margin-bottom: 10px; letter-spacing: 1px; }
-  .q-text { font-size: 16px; font-weight: 700; line-height: 1.8; margin: 0 0 20px; color: #1e293b; }
-  .opt-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .q-text { font-size: 17px; font-weight: 700; line-height: 1.75; margin: 0 0 18px; color: #1e293b; }
+  .opt-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
   .opt-btn {
-    width: 100%; text-align: left; padding: 14px 16px; border-radius: 14px;
+    width: 100%; min-height: 64px; text-align: left; padding: 16px; border-radius: 16px;
     border: 2px solid #e2e8f0; background: #fff; cursor: pointer; transition: all .18s;
     display: flex; align-items: flex-start; gap: 12px; font-family: inherit; font-size: 15px;
+    touch-action: manipulation;
   }
-  .opt-btn:hover:not([disabled]) { border-color: #86efac; }
+  .opt-btn:hover:not([disabled]), .opt-btn:focus-visible { border-color: #86efac; outline: none; box-shadow: 0 0 0 4px rgba(134,239,172,0.28); }
   .opt-letter {
     width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; color: #64748b;
     display: flex; align-items: center; justify-content: center; font-weight: 700;
     flex-shrink: 0; font-size: 13px;
   }
-  .opt-text { font-size: 15px; line-height: 1.7; color: #1e293b; }
+  .opt-text { font-size: 16px; line-height: 1.65; color: #1e293b; }
   .opt-correct { border-color: #22c55e !important; background: #f0fdf4 !important; }
   .opt-correct .opt-letter { background: #22c55e; color: #fff; }
   .opt-wrong { border-color: #ef4444 !important; background: #fef2f2 !important; }
@@ -51,12 +54,21 @@
   .explain-wrong { background: #fef2f2; border: 1px solid #fecaca; }
   .explain-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 700; font-size: 16px; }
   .explain-body { margin: 0 0 14px; line-height: 1.8; color: #374151; font-size: 15px; }
-  .next-btn {
-    width: 100%; padding: 13px; background: #1e293b; color: #fff; border: none;
-    border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer;
-    font-family: inherit;
+  .bottom-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    padding: 12px max(14px, env(safe-area-inset-left)) calc(12px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-right));
+    background: rgba(240,253,244,0.96); border-top: 1px solid #bbf7d0;
+    box-shadow: 0 -8px 24px rgba(15,23,42,0.08);
   }
-  .next-btn:hover { background: #0f172a; }
+  .nav-btn {
+    min-height: 50px; border: none; border-radius: 14px; font-family: inherit;
+    font-size: 16px; font-weight: 800; cursor: pointer; touch-action: manipulation;
+  }
+  .nav-prev { background: #fff; color: #166534; border: 1px solid #86efac; }
+  .nav-next { background: #16a34a; color: #fff; }
+  .nav-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .nav-btn:focus-visible { outline: 3px solid rgba(22,163,74,0.35); outline-offset: 2px; }
   .result-card { max-width: 600px; margin: 24px auto; padding: 40px 32px; background: #fff; border-radius: 20px; box-shadow: 0 4px 32px rgba(0,0,0,0.08); text-align: center; }
   .result-title { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
   .result-score { font-size: 18px; margin-bottom: 8px; }
@@ -75,6 +87,19 @@
   .btn-primary { background: #16a34a; }
   .back-link { display: block; text-align: center; margin-bottom: 12px; color: #64748b; font-size: 13px; text-decoration: none; }
   .back-link:hover { color: #16a34a; }
+  @media (max-width: 520px) {
+    body { padding: 10px 10px calc(92px + env(safe-area-inset-bottom)); }
+    .badge-bar { align-items: flex-start; gap: 8px; padding: 8px 10px; font-size: 12px; }
+    .card { border-radius: 16px; padding: 18px 14px; }
+    .top-row { align-items: flex-start; gap: 10px; }
+    .q-counter { font-size: 14px; }
+    .timer-box { padding: 7px 11px; }
+    .q-text { font-size: 16px; line-height: 1.72; }
+    .opt-btn { min-height: 60px; padding: 14px; gap: 10px; }
+    .opt-text { font-size: 15px; line-height: 1.62; }
+    .explain-box { padding: 15px 14px; }
+    .bottom-nav { gap: 8px; padding-inline: 10px; }
+  }
 </style>
 </head>
 <body>
@@ -147,7 +172,7 @@ var Q=[
   {id:60,category:"まとめ",question:"生成AIを「安全かつ効果的に」業務活用するために最も重要な考え方として最も適切なものを選びなさい。",options:["AIの出力を信頼してすべての判断をAIに委ねる","AIを補助ツールとして活用しながら、最終判断・確認・責任は人間が持つ","AIを導入すれば人間の確認作業は不要になる","AIの利用には高度な技術知識が必要なので専門家以外は使えない"],answer:1,explanation:"生成AIの安全で効果的な活用の核心は「AIは補助ツール、人間が主役」という考え方です。AIの出力を活用しながら、最終確認・判断・責任は必ず人間が持つ「人間中心のAI活用」が基本原則です。"}
 ];
 
-var state={wrongIds:[],queue:Q.slice(),current:0,selected:null,answered:false,score:0,showResult:false,timeLeft:3600,isReview:false,timerId:null};
+var state={wrongIds:[],queue:Q.slice(),answers:[],current:0,selected:null,answered:false,score:0,showResult:false,timeLeft:3600,isReview:false,timerId:null};
 var root=document.getElementById('quiz-root');
 
 function fmt(s){return Math.floor(s/60)+":"+(s%60<10?"0":"")+s%60;}
@@ -165,33 +190,55 @@ function startTimer(){
 
 function handleAnswer(idx){
   if(state.answered||!state.queue.length)return;
+  state.answers[state.current]=idx;
   state.selected=idx;state.answered=true;
-  var q=state.queue[state.current];
-  if(idx===q.answer)state.score++;
-  else if(state.wrongIds.indexOf(q.id)===-1)state.wrongIds.push(q.id);
   render();
 }
 
+function syncAnswer(){
+  var saved=state.answers[state.current];
+  state.selected=typeof saved==='number'?saved:null;
+  state.answered=typeof saved==='number';
+}
+
+function calcResult(){
+  var score=0,wrong=[];
+  state.queue.forEach(function(q,i){
+    if(state.answers[i]===q.answer)score++;
+    else wrong.push(q.id);
+  });
+  state.score=score;
+  state.wrongIds=wrong;
+}
+
 function nextQ(){
-  if(state.current<state.queue.length-1){state.current++;state.selected=null;state.answered=false;}
-  else{state.showResult=true;clearInterval(state.timerId);}
+  if(!state.answered)return;
+  if(state.current<state.queue.length-1){state.current++;syncAnswer();window.scrollTo({top:0,behavior:'smooth'});}
+  else{calcResult();state.showResult=true;clearInterval(state.timerId);}
+  render();
+}
+
+function prevQ(){
+  if(state.current<=0)return;
+  state.current--;syncAnswer();window.scrollTo({top:0,behavior:'smooth'});
   render();
 }
 
 function startReview(){
   state.queue=Q.filter(function(q){return state.wrongIds.indexOf(q.id)!==-1;});
   state.current=0;state.selected=null;state.answered=false;
-  state.score=0;state.showResult=false;state.isReview=true;state.wrongIds=[];
+  state.answers=[];state.score=0;state.showResult=false;state.isReview=true;state.wrongIds=[];
   startTimer();render();
 }
 
 function resetAll(){
   state.wrongIds=[];state.queue=Q.slice();state.current=0;state.selected=null;
-  state.answered=false;state.score=0;state.showResult=false;state.timeLeft=3600;state.isReview=false;
+  state.answers=[];state.answered=false;state.score=0;state.showResult=false;state.timeLeft=3600;state.isReview=false;
   startTimer();render();
 }
 
 function renderResult(){
+  calcResult();
   var pct=Math.round(state.score/state.queue.length*100),pass=pct>=75;
   var h='<div class="result-card">';
   h+='<div style="font-size:48px;margin-bottom:8px;">'+(pass?'🏆':'📘')+'</div>';
@@ -216,6 +263,7 @@ function render(){
   if(state.showResult){renderResult();return;}
   if(!state.queue.length){root.innerHTML='<div>読み込み中...</div>';return;}
   var q=state.queue[state.current];
+  syncAnswer();
   var prog=Math.round((state.current+1)/state.queue.length*100);
   var tc=state.timeLeft<300?'timer-warn':'';
   var h='<div class="badge-bar"><span>Vol.4 本番レベル（合格基準：75点以上）</span>';
@@ -243,14 +291,18 @@ function render(){
     h+='<div class="explain-box '+(ok?'explain-correct':'explain-wrong')+'">';
     h+='<div class="explain-head" style="color:'+(ok?'#16a34a':'#dc2626')+'">'+(ok?'✅ 正解です！':'❌ 不正解です')+'</div>';
     h+='<p class="explain-body"><strong>解説：</strong>'+esc(q.explanation)+'</p>';
-    h+='<button class="next-btn" id="bn">'+(state.current===state.queue.length-1?'結果を見る':'次の問題へ')+' →</button></div>';
+    h+='</div>';
   }
-  h+='</div>';
+  h+='</div><nav class="bottom-nav" aria-label="問題移動">';
+  h+='<button class="nav-btn nav-prev" id="bn-prev" type="button" '+(state.current===0?'disabled':'')+'>前へ</button>';
+  h+='<button class="nav-btn nav-next" id="bn-next" type="button" '+(!state.answered?'disabled':'')+'>'+(state.current===state.queue.length-1?'結果を見る':'次へ')+'</button>';
+  h+='</nav>';
   root.innerHTML=h;
   root.querySelectorAll('.opt-btn').forEach(function(b){
     b.onclick=function(){handleAnswer(parseInt(this.getAttribute('data-idx'),10));};
   });
-  var bn=document.getElementById('bn');if(bn)bn.onclick=nextQ;
+  document.getElementById('bn-prev').onclick=prevQ;
+  document.getElementById('bn-next').onclick=nextQ;
 }
 
 startTimer();render();
